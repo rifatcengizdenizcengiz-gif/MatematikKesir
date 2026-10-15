@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+  <script type="module" src="/@vite/client"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matematik Dönüşüm Ustası (5. Sınıf)</title>
+  <meta name="description" content="5. sınıf matematik müfredatına uygun kesir, ondalık gösterim ve yüzde eşleştirme oyunu.">
+  <meta property="og:title" content="Matematik Dönüşüm Ustası (5. Sınıf)">
+  <meta property="og:description" content="5. sınıf matematik müfredatına uygun kesir, ondalık gösterim ve yüzde eşleştirme oyunu.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-hover: #334155;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-indigo: #6366f1;
+      --accent-rose: #f43f5e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .font-display {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 800;
+    }
+
+    .font-mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Ambient background glows */
+    .glow-1 {
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-2 {
+      position: fixed;
+      bottom: -100px;
+      right: -100px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Screen Flash Overlay */
+    #screen-flash {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    }
+    #screen-flash.success {
+      box-shadow: inset 0 0 0 8px rgba(16, 185, 129, 0.7);
+      opacity: 1;
+    }
+    #screen-flash.error {
+      box-shadow: inset 0 0 0 8px rgba(244, 63, 94, 0.7);
+      opacity: 1;
+    }
+
+    /* Animations */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.9) translateY(10px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .pop-in {
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .pulse-urgent {
+      animation: pulseSoft 0.8s infinite ease-in-out;
+      color: var(--accent-rose) !important;
+    }
+
+    /* Top Bar */
+    header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      width: 100%;
+    }
+    .header-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-amber), var(--accent-indigo));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+    }
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .header-center {
+      display: none;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    @media (min-width: 768px) {
+      .header-center { display: flex; }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-icon {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    .btn-icon:hover {
+      background: var(--card-hover);
+      color: #fff;
+    }
+    .btn-icon.active {
+      color: var(--accent-amber);
+    }
+
+    .btn-download-header {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.45rem 0.85rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn-download-header:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+    .btn-download-header:active {
+      transform: scale(0.97);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Floating Point Banner */
+    #score-popup {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      z-index: 90;
+      pointer-events: none;
+      display: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    #score-popup.bonus {
+      background: rgba(16, 185, 129, 0.95);
+      color: #fff;
+      border: 1px solid #34d399;
+    }
+    #score-popup.penalty {
+      background: rgba(244, 63, 94, 0.95);
+      color: #fff;
+      border: 1px solid #fb7185;
+    }
+
+    /* HUD Strip */
+    .hud {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .hud-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .hud-value {
+      font-size: 1.5rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    /* Target Box */
+    .target-box {
+      background: linear-gradient(180deg, #1e293b 0%, #172133 100%);
+      border: 2px solid rgba(99, 102, 241, 0.5);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .target-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+    .fraction-display {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      background: #0f172a;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 1rem;
+      padding: 0.6rem 2.5rem;
+      margin: 0.5rem 0;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .fraction-num, .fraction-den {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--accent-amber);
+      line-height: 1;
+    }
+    .fraction-line {
+      width: 4rem;
+      height: 4px;
+      background: var(--accent-amber);
+      border-radius: 2px;
+      margin: 4px 0;
+    }
+    .target-prompt {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-top: 0.5rem;
+    }
+    .target-progress {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.2rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #334155;
+      color: #cbd5e1;
+    }
+    .target-progress.step-1 {
+      background: rgba(245, 158, 11, 0.25);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #fde68a;
+    }
+    .target-progress.step-2 {
+      background: rgba(16, 185, 129, 0.25);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #a7f3d0;
+    }
+
+    /* Visual 100-Square Grid Hint */
+    .hint-container {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(51, 65, 85, 0.8);
+    }
+    .btn-hint-toggle {
+      background: none;
+      border: none;
+      color: #a5b4fc;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-hint-toggle:hover {
+      text-decoration: underline;
+    }
+    .hint-box {
+      margin-top: 0.75rem;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 1rem;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: left;
+    }
+    @media (min-width: 600px) {
+      .hint-box {
+        flex-direction: row;
+        justify-content: space-around;
+      }
+    }
+    .grid-100 {
+      width: 100px;
+      height: 100px;
+      background: #020617;
+      border: 1px solid #334155;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      gap: 1px;
+      padding: 1px;
+      border-radius: 4px;
+    }
+    .grid-cell {
+      background: #1e293b;
+      border-radius: 1px;
+    }
+    .grid-cell.filled {
+      background: var(--accent-amber);
+    }
+
+    /* Cards Grid */
+    .cards-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      padding: 0 0.25rem;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+    }
+    @media (min-width: 640px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+    }
+
+    .play-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.25rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 110px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .play-card:hover {
+      background: var(--card-hover);
+      border-color: var(--accent-amber);
+      transform: translateY(-2px);
+    }
+    .play-card:active {
+      transform: scale(0.96);
+    }
+    .play-card.correct {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-color: var(--accent-emerald) !important;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+      cursor: default;
+    }
+    .play-card.correct .card-val {
+      color: #6ee7b7 !important;
+    }
+    .play-card.wrong {
+      background: rgba(244, 63, 94, 0.2) !important;
+      border-color: var(--accent-rose) !important;
+    }
+    .play-card.wrong .card-val {
+      color: #fda4af !important;
+    }
+
+    .card-type {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .card-val {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: #fff;
+    }
+    .card-status {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+    .card-badge.check {
+      background: var(--accent-emerald);
+      color: #022c22;
+    }
+    .card-badge.cross {
+      background: var(--accent-rose);
+      color: #fff;
+    }
+
+    /* Start & Game Over Screens */
+    .view-screen {
+      max-width: 650px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+    .hero-badge-container {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+    .hero-icon-box {
+      width: 90px;
+      height: 90px;
+      border-radius: 1.5rem;
+      background: linear-gradient(135deg, var(--accent-indigo), #9333ea, var(--accent-amber));
+      padding: 3px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+    }
+    .hero-icon-inner {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      border-radius: calc(1.5rem - 3px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-pill {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: var(--accent-amber);
+      color: #0f172a;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .view-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+    .view-desc {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      max-width: 480px;
+      margin: 0 auto 1.75rem auto;
+      line-height: 1.6;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      text-align: left;
+      margin-bottom: 1.75rem;
+    }
+    @media (min-width: 600px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .feature-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    .feature-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    .feature-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--accent-amber), #d97706);
+      color: #020617;
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 0.9rem 2.2rem;
+      border-radius: 1rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+      transition: all 0.2s ease;
+    }
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(245, 158, 11, 0.4);
+    }
+    .btn-cta:active {
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid var(--border-color);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #172133;
+      border: 1px solid var(--border-color);
+      border-radius: 1.5rem;
+      max-width: 520px;
+      width: 100%;
+      padding: 1.5rem;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .modal-close:hover {
+      color: #fff;
+    }
+
+    /* Summary Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (min-width: 600px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.85rem;
+      padding: 0.85rem;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .stat-val {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent-amber);
+    }
+
+    /* Review list */
+    .review-list {
+      max-height: 200px;
+      overflow-y: auto;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 0.85rem;
+      padding: 0.75rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .review-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.8rem;
+    }
+    .review-item:last-child {
+      border-bottom: none;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 0.85rem 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .footer-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    @media (min-width: 640px) {
+      .footer-inner {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  </style>
+<script src="/_aistudio-iframe.js?v=6634132a"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.0.4"></script><style>.aistudio-hover-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px rgba(128,128,128,0.6) !important; }.aistudio-active-highlight { outline: 2px solid #87a9ff !important; outline-offset: -2px !important; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(0,0,0,0.3) !important; }.aistudio-generating-blur { filter: blur(5px) grayscale(100%) brightness(28%) !important; transition: filter 0.3s ease; }#aistudio-focus-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: #87a9ff; border-radius: 12px; z-index: 10000; padding: 8px; color: #32302c; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }#aistudio-hover-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: rgba(128,128,128,0.6); border-radius: 12px; z-index: 10000; padding: 8px; color: white; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }.aistudio-img-icon { display: none; vertical-align: middle; pointer-events: auto; cursor: pointer; }.aistudio-img-icon.visible { display: inline-flex; }#aistudio-focus-mode-tag .aistudio-img-icon { position: relative; width: 26px; height: 26px; background: #32302c; border-radius: 6px; margin: -4px -4px -4px 0; }#aistudio-focus-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-hover-mode-tag .aistudio-img-icon { position: relative; width: 18px; height: 18px; margin-left: 4px; }#aistudio-hover-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-focus-mode-tag .aistudio-img-icon:hover, #aistudio-hover-mode-tag .aistudio-img-icon:hover { background: #424242 !important; }#aistudio-focus-mode-tag .aistudio-img-icon:active, #aistudio-hover-mode-tag .aistudio-img-icon:active { background: #393f51 !important; }</style></head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+  <div id="screen-flash"></div>
+
+  <!-- Score floating popup -->
+  <div id="score-popup" class="pop-in"></div>
+
+  <!-- TOP BAR -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">%</div>
+        <div>
+          <div class="brand-title">Matematik Dönüşüm Ustası</div>
+          <div class="brand-subtitle">5. Sınıf • Kesir, Ondalık ve Yüzde</div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <span style="cursor:pointer;" onclick="openHowToModal()">📖 Nasıl Oynanır?</span>
+        <span>·</span>
+        <span>🏆 En Yüksek: <strong id="header-high-score" class="font-mono" style="color:#fff;">180</strong></span>
+        <span>·</span>
+        <span>MEB Müfredatı</span>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn-download-header" onclick="downloadCurrentHTML()" title="Bu web sayfasını sunucunuzda çalıştırmak için index.html olarak indirin">
+          📥 İndir (HTML)
+        </button>
+        <button id="btn-sound" class="btn-icon active" onclick="toggleSound()" title="Sesi Aç/Kapat">🔊</button>
+        <button class="btn-icon" onclick="openHowToModal()" title="Nasıl Oynanır?">
+          ❓
+        </button>
+        <button id="btn-restart" class="btn-icon" onclick="startGame()" title="Yeniden Başlat" style="display:none;">
+          🔄
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main>
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="view-screen">
+      <div class="hero-badge-container">
+        <div class="hero-icon-box">
+          <div class="hero-icon-inner">
+            <span class="font-display" style="font-size: 1.8rem; font-weight: 900; color: var(--accent-amber);">3/4</span>
+            <span class="font-mono" style="font-size: 0.7rem; color: #a5b4fc; font-weight: 700;">0,75 • %75</span>
+          </div>
+        </div>
+        <div class="hero-pill">5. SINIF</div>
+      </div>
+
+      <h1 class="view-title">Kesir, Ondalık ve Yüzde Ustası</h1>
+      <p class="view-desc">
+        Hedef kesri incele! Ekrana gelen 6 kart arasından bu kesrin <strong style="color:var(--accent-amber)">ondalık</strong> ve <strong style="color:var(--accent-emerald)">yüzde</strong> karşılıklarını seçip eşleştir.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-title" style="color:var(--accent-emerald);">✓ Doğru Eşleşme</div>
+          <div class="feature-text">2 karşılığı da doğru seç: <strong style="color:#6ee7b7">+100 Puan</strong> ve <strong style="color:#6ee7b7">+3 Saniye</strong> kazan!</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title" style="color:var(--accent-rose);">✕ Hatalı Seçim</div>
+          <div class="feature-text">Tuzaklara dikkat et! Yanlış kartta <strong style="color:#fda4af">-20 Puan</strong> düşer.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title" style="color:var(--accent-amber);">⏱ 60 Saniye Süre</div>
+          <div class="feature-text">Süre bitmeden tüm dönüşümleri tamamla ve sınıf rekorunu kır.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; sm:flex-row; gap:0.75rem; justify-content:center; align-items:center;">
+        <button class="btn-cta" onclick="startGame()">
+          <span>▶ Hemen Başla (60 Saniye)</span>
+        </button>
+        <button class="btn-secondary" onclick="downloadCurrentHTML()">
+          <span>📥 Sunucu İçin Dosyayı İndir (.html)</span>
+        </button>
+      </div>
+
+      <div id="start-high-score-display" style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); display: block;">
+        🏆 Mevcut Rekorunuz: <strong id="start-high-score-val" class="font-mono" style="color:var(--accent-amber);">180</strong> Puan
+      </div>
+    </div>
+
+    <!-- 2. GAMEPLAY SCREEN -->
+    <div id="gameplay-screen" style="display: none;">
+      <!-- HUD -->
+      <div class="hud">
+        <div class="hud-item">
+          <div>
+            <div class="hud-label">Puan</div>
+            <div id="hud-score" class="hud-value font-mono" style="color:var(--accent-amber);">0</div>
+          </div>
+        </div>
+
+        <div id="hud-streak" style="display:none; align-items:center; gap:0.4rem; background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4); padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.75rem; font-weight:800; color:#fde68a;">
+          🔥 <span id="hud-streak-count">2</span> Seri!
+        </div>
+
+        <div class="hud-item">
+          <div style="text-align: right;">
+            <div class="hud-label">Kalan Süre</div>
+            <div id="hud-timer" class="hud-value font-mono" style="color:var(--accent-emerald);">60s</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Target Fraction Card -->
+      <div class="target-box">
+        <div class="target-badge">✨ HEDEF KESİR</div>
+        <br>
+        <div class="fraction-display">
+          <span id="target-num" class="fraction-num">3</span>
+          <div class="fraction-line"></div>
+          <span id="target-den" class="fraction-den">4</span>
+        </div>
+
+        <div class="target-prompt">
+          Aşağıdaki kartlardan bu kesrin <span style="color:var(--accent-amber); text-decoration: underline;">ondalık</span> ve <span style="color:var(--accent-emerald); text-decoration: underline;">yüzde</span> karşılığını seç!
+        </div>
+
+        <div id="target-progress-badge" class="target-progress">
+          0 / 2 Karşılık Bulundu
+        </div>
+
+        <!-- 10x10 Hundredths Grid Visual Aid -->
+        <div class="hint-container">
+          <button class="btn-hint-toggle" onclick="toggleHintVisual()">
+            <span id="hint-toggle-text">👁 Görsel Modeli Gizle</span>
+          </button>
+
+          <div id="hint-box" class="hint-box">
+            <div style="display:flex; flex-direction:column; align-items:center;">
+              <span style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.25rem;">
+                Yüzlük Model (<span id="hint-fraction-num">75</span>/100)
+              </span>
+              <div id="hundred-grid" class="grid-100"></div>
+            </div>
+
+            <div style="font-size: 0.8rem; line-height: 1.5; color: #cbd5e1;">
+              <div style="font-weight: 700; color: var(--accent-amber); margin-bottom: 0.2rem;">📖 Genişletme Yolu:</div>
+              <div>Paydayı 100 yapmak için <strong id="hint-factor" style="color:#fff;">25</strong> ile çarp:</div>
+              <div id="hint-math-step" class="font-mono" style="background:#020617; border:1px solid #1e293b; padding:0.3rem 0.6rem; border-radius:6px; margin-top:0.25rem; font-size:0.75rem; color:#a5b4fc;">
+                (3 × 25) / (4 × 25) = 75/100
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 Cards Grid -->
+      <div class="cards-header">
+        <span>Aşağıdaki 6 Karttan Doğru 2 Karşılığı Seç:</span>
+        <span style="font-weight: normal; color: var(--text-muted);">(1 Ondalık + 1 Yüzde)</span>
+      </div>
+
+      <div id="cards-container" class="cards-grid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- 3. GAME OVER SCREEN -->
+    <div id="gameover-screen" class="view-screen" style="display: none;">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏆</div>
+      <h2 class="view-title">Süre Doldu! Harika İş!</h2>
+      <p class="view-desc">5. sınıf kesir, ondalık ve yüzde dönüşümlerini başarıyla tamamladın.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Toplam Puan</div>
+          <div id="final-score" class="stat-val font-mono">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">En Yüksek Skor</div>
+          <div id="final-high-score" class="stat-val font-mono" style="color:#eab308;">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tamamlanan Tur</div>
+          <div id="final-rounds-count" class="stat-val font-mono" style="color:var(--accent-emerald);">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">En Uzun Seri</div>
+          <div id="final-max-streak" class="stat-val font-mono" style="color:var(--accent-indigo);">0</div>
+        </div>
+      </div>
+
+      <!-- History review list -->
+      <div id="review-container" style="display:none; text-align:left; margin-bottom:1.5rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#fff; margin-bottom:0.5rem;">
+          📖 Bu Oyunda Eşleştirdiğin Dönüşümler:
+        </div>
+        <div id="review-list" class="review-list"></div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center;">
+        <button class="btn-cta" onclick="startGame()">
+          <span>🔄 Tekrar Oyna</span>
+        </button>
+        <button class="btn-secondary" onclick="downloadCurrentHTML()">
+          <span>📥 Dosyayı İndir (index.html)</span>
+        </button>
+        <button onclick="openHowToModal()" style="background:none; border:none; color:#a5b4fc; font-size:0.85rem; cursor:pointer; text-decoration:underline;">
+          Konu Anlatımını &amp; Kuralları İncele
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span>5. Sınıf Matematik Müfredatına Uygun Kesir-Ondalık-Yüzde Oyunu (Sunucuya Hazır Tek Dosya)</span>
+      <div>
+        <span>+100 Puan Doğru</span> · <span>+3 Sn Süre</span> · <span>-20 Puan Yanlış</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: NASIL OYNANIR? -->
+  <div id="how-to-modal" class="modal-backdrop" style="display: none;" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeHowToModal()">✕</button>
+      <div style="font-size:1.5rem; margin-bottom:0.5rem;">📚</div>
+      <h3 style="font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:0.75rem;">
+        5. Sınıf Dönüşüm Rehberi &amp; Kurallar
+      </h3>
+
+      <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.6; display:flex; flex-direction:column; gap:0.85rem;">
+        <div style="background:#0f172a; padding:0.75rem; border-radius:0.75rem; border:1px solid #1e293b;">
+          <strong style="color:var(--accent-amber);">1. Kesri Genişleterek Dönüştürme:</strong>
+          <p style="margin-top:0.25rem;">Bir kesri yüzdeye veya ondalığa çevirmek için paydasını <strong>10</strong> veya <strong>100</strong> yaparız.</p>
+          <div class="font-mono" style="background:#020617; padding:0.4rem; border-radius:6px; margin-top:0.4rem; font-size:0.75rem; color:#a5b4fc;">
+            Örnek: 3/4 kesrini 25 ile genişlet:<br>
+            (3×25)/(4×25) = <strong>75/100</strong> = <strong>0,75</strong> = <strong>%75</strong>
+          </div>
+        </div>
+
+        <div style="background:#0f172a; padding:0.75rem; border-radius:0.75rem; border:1px solid #1e293b;">
+          <strong style="color:var(--accent-emerald);">2. En Önemli MEB Kesir Eşleşmeleri:</strong>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; margin-top:0.4rem; font-size:0.75rem;" class="font-mono">
+            <div>1/2 = 0,5 = %50</div>
+            <div>1/4 = 0,25 = %25</div>
+            <div>3/4 = 0,75 = %75</div>
+            <div>1/5 = 0,2 = %20</div>
+            <div>2/5 = 0,4 = %40</div>
+            <div>7/10 = 0,7 = %70</div>
+          </div>
+        </div>
+
+        <div style="background:#0f172a; padding:0.75rem; border-radius:0.75rem; border:1px solid #1e293b;">
+          <strong style="color:#fff;">3. Oyun Kuralları:</strong>
+          <ul style="padding-left:1.2rem; margin-top:0.25rem; font-size:0.8rem;">
+            <li>Her soruda hedef kesrin <strong>1 ondalık</strong> ve <strong>1 yüzde</strong> karşılığı vardır.</li>
+            <li>İki karşılığı da doğru seçtiğinde: <strong style="color:var(--accent-emerald);">+100 Puan</strong> ve <strong style="color:var(--accent-emerald);">+3 Saniye</strong> kazanırsın.</li>
+            <li>Hatalı bir karta tıklarsan: <strong style="color:var(--accent-rose);">-20 Puan</strong> düşer.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem; text-align:right;">
+        <button class="btn-cta" style="padding:0.6rem 1.4rem; font-size:0.9rem;" onclick="closeHowToModal()">
+          Anladım, Kapat
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT: TAMAMEN YEREL VE BAĞIMSIZ OYUN MOTORU -->
+  <script>
+    // --- DAHİLİ KULLANILABİLİR İNDİRME MOTORU ---
+    function downloadCurrentHTML() {
+      // Temiz, doğrudan sunucuya atılabilecek tek parça HTML oluştur
+      const fullDoc = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([fullDoc], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    // --- HARİCİ KÜTÜPHANEYE BAĞIMLI OLMAYAN DAHİLİ KONFETİ MOTORU ---
+    function fireConfetti() {
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      canvas.style.pointerEvents = 'none';
+      canvas.style.zIndex = '9999';
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#f43f5e', '#38bdf8'];
+      const particles = [];
+      const count = 65;
+
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: canvas.width * 0.5 + (Math.random() - 0.5) * 200,
+          y: canvas.height * 0.55,
+          vx: (Math.random() - 0.5) * 16,
+          vy: -(Math.random() * 12 + 6),
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 12,
+          alpha: 1,
+          shape: Math.random() > 0.4 ? 'rect' : 'circle'
+        });
+      }
+
+      const start = Date.now();
+      function loop() {
+        const elapsed = Date.now() - start;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let alive = 0;
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.38; // yerçekimi
+          p.vx *= 0.98; // hava sürtünmesi
+          p.rotation += p.vRot;
+          if (elapsed > 1000) p.alpha -= 0.025;
+
+          if (p.alpha > 0 && p.y < canvas.height + 40) {
+            alive++;
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+
+            if (p.shape === 'rect') {
+              ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            } else {
+              ctx.beginPath();
+              ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.restore();
+          }
+        });
+
+        if (alive > 0 && elapsed < 2500) {
+          requestAnimationFrame(loop);
+        } else {
+          if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+        }
+      }
+      requestAnimationFrame(loop);
+    }
+
+    // --- 5. SINIF MATEMATİK VERİTABANI ---
+    const MATH_POOL = [
+      { id: '1_2', num: 1, den: 2, frac: '1/2', dec: '0,5', pct: '%50', factor: 50, exp: '50/100', wrongDec: ['0,2', '0,05'], wrongPct: ['%20', '%5'] },
+      { id: '1_4', num: 1, den: 4, frac: '1/4', dec: '0,25', pct: '%25', factor: 25, exp: '25/100', wrongDec: ['0,4', '0,14'], wrongPct: ['%40', '%14'] },
+      { id: '3_4', num: 3, den: 4, frac: '3/4', dec: '0,75', pct: '%75', factor: 25, exp: '75/100', wrongDec: ['0,34', '0,43'], wrongPct: ['%34', '%43'] },
+      { id: '1_5', num: 1, den: 5, frac: '1/5', dec: '0,2', pct: '%20', factor: 20, exp: '20/100', wrongDec: ['0,5', '0,15'], wrongPct: ['%50', '%15'] },
+      { id: '2_5', num: 2, den: 5, frac: '2/5', dec: '0,4', pct: '%40', factor: 20, exp: '40/100', wrongDec: ['0,25', '0,2'], wrongPct: ['%25', '%20'] },
+      { id: '3_5', num: 3, den: 5, frac: '3/5', dec: '0,6', pct: '%60', factor: 20, exp: '60/100', wrongDec: ['0,35', '0,3'], wrongPct: ['%35', '%30'] },
+      { id: '4_5', num: 4, den: 5, frac: '4/5', dec: '0,8', pct: '%80', factor: 20, exp: '80/100', wrongDec: ['0,45', '0,4'], wrongPct: ['%45', '%40'] },
+      { id: '1_10', num: 1, den: 10, frac: '1/10', dec: '0,1', pct: '%10', factor: 10, exp: '10/100', wrongDec: ['0,01', '0,11'], wrongPct: ['%1', '%100'] },
+      { id: '3_10', num: 3, den: 10, frac: '3/10', dec: '0,3', pct: '%30', factor: 10, exp: '30/100', wrongDec: ['0,03', '0,33'], wrongPct: ['%3', '%33'] },
+      { id: '7_10', num: 7, den: 10, frac: '7/10', dec: '0,7', pct: '%70', factor: 10, exp: '70/100', wrongDec: ['0,07', '0,77'], wrongPct: ['%7', '%17'] },
+      { id: '9_10', num: 9, den: 10, frac: '9/10', dec: '0,9', pct: '%90', factor: 10, exp: '90/100', wrongDec: ['0,09', '0,19'], wrongPct: ['%9', '%19'] },
+      { id: '1_20', num: 1, den: 20, frac: '1/20', dec: '0,05', pct: '%5', factor: 5, exp: '5/100', wrongDec: ['0,5', '0,2'], wrongPct: ['%50', '%20'] },
+      { id: '3_20', num: 3, den: 20, frac: '3/20', dec: '0,15', pct: '%15', factor: 5, exp: '15/100', wrongDec: ['0,3', '0,05'], wrongPct: ['%30', '%5'] },
+      { id: '7_20', num: 7, den: 20, frac: '7/20', dec: '0,35', pct: '%35', factor: 5, exp: '35/100', wrongDec: ['0,7', '0,07'], wrongPct: ['%70', '%7'] },
+      { id: '11_20', num: 11, den: 20, frac: '11/20', dec: '0,55', pct: '%55', factor: 5, exp: '55/100', wrongDec: ['0,11', '0,5'], wrongPct: ['%11', '%50'] },
+      { id: '1_25', num: 1, den: 25, frac: '1/25', dec: '0,04', pct: '%4', factor: 4, exp: '4/100', wrongDec: ['0,4', '0,25'], wrongPct: ['%40', '%25'] },
+      { id: '2_25', num: 2, den: 25, frac: '2/25', dec: '0,08', pct: '%8', factor: 4, exp: '8/100', wrongDec: ['0,8', '0,2'], wrongPct: ['%80', '%20'] },
+      { id: '6_25', num: 6, den: 25, frac: '6/25', dec: '0,24', pct: '%24', factor: 4, exp: '24/100', wrongDec: ['0,6', '0,26'], wrongPct: ['%60', '%26'] },
+      { id: '13_25', num: 13, den: 25, frac: '13/25', dec: '0,52', pct: '%52', factor: 4, exp: '52/100', wrongDec: ['0,13', '0,25'], wrongPct: ['%13', '%25'] },
+      { id: '1_50', num: 1, den: 50, frac: '1/50', dec: '0,02', pct: '%2', factor: 2, exp: '2/100', wrongDec: ['0,2', '0,5'], wrongPct: ['%20', '%50'] },
+      { id: '9_50', num: 9, den: 50, frac: '9/50', dec: '0,18', pct: '%18', factor: 2, exp: '18/100', wrongDec: ['0,9', '0,09'], wrongPct: ['%90', '%9'] },
+      { id: '17_50', num: 17, den: 50, frac: '17/50', dec: '0,34', pct: '%34', factor: 2, exp: '34/100', wrongDec: ['0,17', '0,7'], wrongPct: ['%17', '%70'] }
+    ];
+
+    // --- SES MOTORU (Web Audio API - Sıfır Harici Ses Dosyası) ---
+    class SoundFX {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        try {
+          const s = localStorage.getItem('donusum_ses');
+          if (s !== null) this.enabled = s === 'true';
+        } catch(e) {}
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) this.ctx = new AudioContextClass();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        try { localStorage.setItem('donusum_ses', this.enabled ? 'true' : 'false'); } catch(e){}
+        return this.enabled;
+      }
+
+      playFirstMatch() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+
+      playRoundComplete() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const startTime = now + idx * 0.08;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.25, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.35);
+        });
+      }
+
+      playError() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+
+      playTick() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      }
+
+      playGameOver() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [659.25, 587.33, 523.25, 392.0];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const startTime = now + idx * 0.12;
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.22, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.38);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.4);
+        });
+      }
+    }
+
+    const sfx = new SoundFX();
+
+    // --- OYUN DURUM DEĞİŞKENLERİ ---
+    let score = 0;
+    let timeLeft = 60;
+    let timerInterval = null;
+    let currentItem = null;
+    let correctCardsFound = [];
+    let streak = 0;
+    let maxStreak = 0;
+    let correctRoundsCount = 0;
+    let highScore = 0;
+    let history = [];
+    let showHint = true;
+    let isProcessing = false;
+
+    // Rekor Yükle
+    try {
+      const saved = localStorage.getItem('donusum_rekor');
+      if (saved) {
+        highScore = parseInt(saved, 10) || 0;
+        document.getElementById('header-high-score').innerText = highScore;
+        document.getElementById('start-high-score-val').innerText = highScore;
+        document.getElementById('start-high-score-display').style.display = 'block';
+      }
+    } catch(e) {}
+
+    updateSoundButtonUI();
+
+    function updateSoundButtonUI() {
+      const btn = document.getElementById('btn-sound');
+      if (sfx.enabled) {
+        btn.classList.add('active');
+        btn.innerText = '🔊';
+      } else {
+        btn.classList.remove('active');
+        btn.innerText = '🔇';
+      }
+    }
+
+    function toggleSound() {
+      const active = sfx.toggle();
+      updateSoundButtonUI();
+    }
+
+    // Modal
+    function openHowToModal() {
+      document.getElementById('how-to-modal').style.display = 'flex';
+    }
+    function closeHowToModal() {
+      document.getElementById('how-to-modal').style.display = 'none';
+    }
+    function closeModalOnBackdrop(e) {
+      if (e.target.id === 'how-to-modal') closeHowToModal();
+    }
+
+    // İpucu Görseli
+    function toggleHintVisual() {
+      showHint = !showHint;
+      const box = document.getElementById('hint-box');
+      const text = document.getElementById('hint-toggle-text');
+      if (showHint) {
+        box.style.display = 'flex';
+        text.innerText = '👁 Görsel Modeli Gizle';
+      } else {
+        box.style.display = 'none';
+        text.innerText = '👁 Görsel Kesir Modelini Göster (İpucu)';
+      }
+    }
+
+    // Puan Açılır Bildirimi
+    function showScorePopup(msg, type) {
+      const el = document.getElementById('score-popup');
+      el.className = 'pop-in ' + type;
+      el.innerText = msg;
+      el.style.display = 'block';
+      setTimeout(() => {
+        el.style.display = 'none';
+      }, 750);
+    }
+
+    // Ekran Kenar Parlama
+    function flashScreen(type) {
+      const el = document.getElementById('screen-flash');
+      el.className = type;
+      setTimeout(() => {
+        el.className = '';
+      }, 400);
+    }
+
+    // --- OYUN BAŞLATMA VE DÖNGÜSÜ ---
+    function startGame() {
+      clearInterval(timerInterval);
+      score = 0;
+      timeLeft = 60;
+      streak = 0;
+      maxStreak = 0;
+      correctRoundsCount = 0;
+      history = [];
+      isProcessing = false;
+
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('gameover-screen').style.display = 'none';
+      document.getElementById('gameplay-screen').style.display = 'block';
+      document.getElementById('btn-restart').style.display = 'inline-flex';
+
+      updateHUD();
+      setupNewRound();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 5 && timeLeft > 0) {
+          sfx.playTick();
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timeLeft = 0;
+          endGame();
+        }
+        updateHUD();
+      }, 1000);
+    }
+
+    function updateHUD() {
+      document.getElementById('hud-score').innerText = score;
+      const timerEl = document.getElementById('hud-timer');
+      timerEl.innerText = timeLeft + 's';
+      if (timeLeft <= 10) {
+        timerEl.classList.add('pulse-urgent');
+      } else {
+        timerEl.classList.remove('pulse-urgent');
+      }
+
+      const streakEl = document.getElementById('hud-streak');
+      if (streak > 1) {
+        streakEl.style.display = 'flex';
+        document.getElementById('hud-streak-count').innerText = streak;
+      } else {
+        streakEl.style.display = 'none';
+      }
+    }
+
+    function setupNewRound(prevId) {
+      isProcessing = false;
+      correctCardsFound = [];
+
+      const filtered = MATH_POOL.filter(item => item.id !== prevId);
+      currentItem = filtered[Math.floor(Math.random() * filtered.length)];
+
+      document.getElementById('target-num').innerText = currentItem.num;
+      document.getElementById('target-den').innerText = currentItem.den;
+      updateProgressBadge();
+
+      const percentVal = Math.round((currentItem.num / currentItem.den) * 100);
+      document.getElementById('hint-fraction-num').innerText = percentVal;
+      document.getElementById('hint-factor').innerText = currentItem.factor;
+      document.getElementById('hint-math-step').innerText =
+        `(${currentItem.num} × ${currentItem.factor}) / (${currentItem.den} × ${currentItem.factor}) = ${currentItem.exp}`;
+
+      const gridEl = document.getElementById('hundred-grid');
+      gridEl.innerHTML = '';
+      for (let i = 0; i < 100; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell' + (i < percentVal ? ' filled' : '');
+        gridEl.appendChild(cell);
+      }
+
+      const cards = [];
+      cards.push({ id: 'c_dec', type: 'decimal', display: currentItem.dec, isCorrect: true });
+      cards.push({ id: 'c_pct', type: 'percent', display: currentItem.pct, isCorrect: true });
+
+      let wrongDecs = [...currentItem.wrongDec];
+      while (wrongDecs.length < 2) {
+        const randomItem = MATH_POOL[Math.floor(Math.random() * MATH_POOL.length)];
+        if (randomItem.dec !== currentItem.dec && !wrongDecs.includes(randomItem.dec)) {
+          wrongDecs.push(randomItem.dec);
+        }
+      }
+      wrongDecs.slice(0, 2).forEach((val, idx) => {
+        cards.push({ id: 'w_dec_' + idx, type: 'decimal', display: val, isCorrect: false });
+      });
+
+      let wrongPcts = [...currentItem.wrongPct];
+      while (wrongPcts.length < 2) {
+        const randomItem = MATH_POOL[Math.floor(Math.random() * MATH_POOL.length)];
+        if (randomItem.pct !== currentItem.pct && !wrongPcts.includes(randomItem.pct)) {
+          wrongPcts.push(randomItem.pct);
+        }
+      }
+      wrongPcts.slice(0, 2).forEach((val, idx) => {
+        cards.push({ id: 'w_pct_' + idx, type: 'percent', display: val, isCorrect: false });
+      });
+
+      cards.sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('cards-container');
+      container.innerHTML = '';
+      cards.forEach((card, idx) => {
+        const cardBtn = document.createElement('button');
+        cardBtn.className = 'play-card';
+        cardBtn.id = 'card-' + idx;
+        cardBtn.onclick = () => onCardClicked(card, cardBtn);
+
+        cardBtn.innerHTML = `
+          <div class="card-type">${card.type === 'decimal' ? 'Ondalık Gösterim' : 'Yüzde Gösterimi'}</div>
+          <div class="card-val font-mono">${card.display}</div>
+          <div class="card-status">Tıklayarak Seç</div>
+        `;
+        container.appendChild(cardBtn);
+      });
+    }
+
+    function updateProgressBadge() {
+      const badge = document.getElementById('target-progress-badge');
+      const count = correctCardsFound.length;
+      badge.className = 'target-progress' + (count === 1 ? ' step-1' : count === 2 ? ' step-2' : '');
+      badge.innerText = `${count} / 2 Karşılık Bulundu`;
+    }
+
+    function onCardClicked(card, btnElement) {
+      if (isProcessing) return;
+      if (correctCardsFound.includes(card.id)) return;
+
+      if (card.isCorrect) {
+        correctCardsFound.push(card.id);
+        btnElement.classList.add('correct');
+        btnElement.querySelector('.card-status').innerText = 'Eşleşti! ✓';
+
+        const checkMark = document.createElement('div');
+        checkMark.className = 'card-badge check';
+        checkMark.innerText = '✓';
+        btnElement.appendChild(checkMark);
+
+        updateProgressBadge();
+
+        if (correctCardsFound.length === 2) {
+          isProcessing = true;
+          sfx.playRoundComplete();
+          fireConfetti();
+          flashScreen('success');
+
+          score += 100;
+          timeLeft = Math.min(timeLeft + 3, 99);
+          streak++;
+          if (streak > maxStreak) maxStreak = streak;
+          correctRoundsCount++;
+
+          showScorePopup('+100 Puan • +3 Sn!', 'bonus');
+          updateHUD();
+
+          history.push({
+            frac: currentItem.frac,
+            dec: currentItem.dec,
+            pct: currentItem.pct,
+            exp: currentItem.exp
+          });
+
+          setTimeout(() => {
+            setupNewRound(currentItem.id);
+          }, 700);
+        } else {
+          sfx.playFirstMatch();
+          showScorePopup('1/2 Doğru! Diğerini Bul', 'bonus');
+        }
+      } else {
+        sfx.playError();
+        btnElement.classList.add('wrong', 'shake');
+        flashScreen('error');
+
+        score = Math.max(0, score - 20);
+        streak = 0;
+        showScorePopup('-20 Puan', 'penalty');
+        updateHUD();
+
+        setTimeout(() => {
+          btnElement.classList.remove('shake');
+        }, 500);
+      }
+    }
+
+    function endGame() {
+      document.getElementById('gameplay-screen').style.display = 'none';
+      document.getElementById('gameover-screen').style.display = 'block';
+      document.getElementById('btn-restart').style.display = 'none';
+
+      sfx.playGameOver();
+
+      if (score > highScore) {
+        highScore = score;
+        try {
+          localStorage.setItem('donusum_rekor', highScore.toString());
+        } catch(e) {}
+        document.getElementById('header-high-score').innerText = highScore;
+        fireConfetti();
+      }
+
+      document.getElementById('final-score').innerText = score;
+      document.getElementById('final-high-score').innerText = highScore;
+      document.getElementById('final-rounds-count').innerText = correctRoundsCount;
+      document.getElementById('final-max-streak').innerText = maxStreak;
+
+      const reviewContainer = document.getElementById('review-container');
+      const reviewList = document.getElementById('review-list');
+      if (history.length > 0) {
+        reviewContainer.style.display = 'block';
+        reviewList.innerHTML = '';
+        history.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'review-item';
+          row.innerHTML = `
+            <div>
+              <span style="color:var(--accent-amber); font-weight:800;">${item.frac}</span> =
+              <strong style="color:#fff;">${item.dec}</strong> =
+              <strong style="color:var(--accent-emerald);">${item.pct}</strong>
+            </div>
+            <div style="color:var(--text-muted); font-size:0.75rem;">(${item.exp})</div>
+          `;
+          reviewList.appendChild(row);
+        });
+      } else {
+        reviewContainer.style.display = 'none';
+      }
+    }
+  </script>
+
+
+</body></html>
